@@ -1,6 +1,6 @@
 --=====================================================================================
 -- RND | Remove Nameplate Debuffs! - core.lua
--- Version: 3.3.1
+-- Version: 3.3.5
 -- Author: DonnieDice
 -- Description: Professional World of Warcraft addon that removes debuff icons from nameplates
 -- RGX Mods Collection - RealmGX Community Project
@@ -10,7 +10,7 @@
 RND = RND or {}
 
 -- Constants (cached for performance)
-local ADDON_VERSION = "3.3.1"
+local ADDON_VERSION = "3.3.5"
 local ADDON_NAME = "RemoveNameplateDebuffs"
 local ICON_PATH = "|Tinterface/addons/RemoveNameplateDebuffs/media/icon:16:16|t"
 local MINIMAP_ICON_TEXTURE = "Interface\\AddOns\\RemoveNameplateDebuffs\\media\\icon"
@@ -223,6 +223,17 @@ function RND:RestoreAllNameplateDebuffs()
     end
 end
 
+function RND:HideAllNameplateDebuffs()
+    for _, nameplate in pairs(C_NamePlate.GetNamePlates()) do
+        if nameplate and nameplate.UnitFrame then
+            local unitId = nameplate.UnitFrame.unit
+            if unitId then
+                self:HideNameplateDebuffs(unitId)
+            end
+        end
+    end
+end
+
 -- Test functionality by toggling nameplates
 function RND:TestFunctionality()
 	if not self.L then
@@ -303,6 +314,8 @@ function RND:HandleMinimapClick()
 	self:SetSetting("enabled", not current)
 	if current then
 		self:RestoreAllNameplateDebuffs()
+	else
+		self:HideAllNameplateDebuffs()
 	end
 	if self.L then
 		local msg = (not current) and self.L["ADDON_ENABLED"] or self.L["ADDON_DISABLED"]
@@ -356,6 +369,7 @@ function RND:HandleSlashCommand(args)
 		self:ShowHelp()
 	elseif command == "on" or command == "enable" then
 		self:SetSetting("enabled", true)
+		self:HideAllNameplateDebuffs()
 		print(CHAT_PREFIX .. " " .. self.L["ADDON_ENABLED"])
 	elseif command == "off" or command == "disable" then
 		self:SetSetting("enabled", false)
@@ -497,12 +511,6 @@ RGX:RegisterEvent("NAME_PLATE_UNIT_ADDED", function(event, unitId)
         RND:HideNameplateDebuffs(unitId)
     end
 end, "RND_NameplateAdded")
-
-RGX:RegisterEvent("UNIT_AURA", function(event, unitId)
-    if RND.initialized and RND:GetSetting("enabled") and unitId and string.match(unitId, "nameplate") then
-        RND:HideNameplateDebuffs(unitId)
-    end
-end, "RND_UnitAura")
 
 RGX:RegisterEvent("ADDON_LOADED", function(event, addonName)
     if addonName == ADDON_NAME then
