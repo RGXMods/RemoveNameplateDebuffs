@@ -1,4 +1,17 @@
-﻿# v3.3.3 - 2026-08-07
+﻿# v3.3.5 - 2026-09-17
+
+## Changes
+- Added verified WoW Forever Beta `1.60.1.69893` (Interface `120007`) compatibility.
+- Enabling RND immediately hides debuffs on visible nameplates; disabling still restores them.
+- Removed the raw `UNIT_AURA` listener because visible nameplate updates already handle the required refresh path.
+- Synced the runtime version with the TOC metadata.
+
+# v3.3.4 - 2026-08-22
+
+## Changes
+- Updated release metadata for the active supported client interfaces.
+
+# v3.3.3 - 2026-08-07
 
 ## Changes
 - TOC bump: Updated universal interface versions to 11509 (Classic Era), 20506 (TBC Anniversary), 50504 (MoP Classic), 120007 (Retail). Removed Cata (40402) and legacy Retail eras (110207, 120000, 120001).

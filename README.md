@@ -180,6 +180,7 @@ _<span style="color:#e67e23">Every donation helps fund new features and improvem
 | WoW Version | Interface | Status | TOC File |
 |-------------|-----------|--------|----------|
 | **Midnight (Retail)** | `120007` | ✅ Fully Supported | `RemoveNameplateDebuffs.toc` |
+| **WoW Forever Beta (1.60.1.69893)** | `120007` | ✅ Fully Supported | `RemoveNameplateDebuffs.toc` |
 | **Mists of Pandaria Classic** | `50504` | ✅ Fully Supported | `RemoveNameplateDebuffs.toc` |
 | **Burning Crusade Classic** | `20506` | ✅ Fully Supported | `RemoveNameplateDebuffs.toc` |
 | **Classic Era** | `11509` | ✅ Fully Supported | `RemoveNameplateDebuffs.toc` |
