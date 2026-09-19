@@ -1,6 +1,6 @@
 --=====================================================================================
 -- RND | Remove Nameplate Debuffs! - core.lua
--- Version: 3.3.5
+-- Version: 3.3.6
 -- Author: DonnieDice
 -- Description: Professional World of Warcraft addon that removes debuff icons from nameplates
 -- RGX Mods Collection - RealmGX Community Project
@@ -10,7 +10,7 @@
 RND = RND or {}
 
 -- Constants (cached for performance)
-local ADDON_VERSION = "3.3.5"
+local ADDON_VERSION = "3.3.6"
 local ADDON_NAME = "RemoveNameplateDebuffs"
 local ICON_PATH = "|Tinterface/addons/RemoveNameplateDebuffs/media/icon:16:16|t"
 local MINIMAP_ICON_TEXTURE = "Interface\\AddOns\\RemoveNameplateDebuffs\\media\\icon"
@@ -41,10 +41,47 @@ RND.defaultMinimapAngle = 220
 -- Saved variables will be loaded by WoW after ADDON_LOADED event
 -- Do not initialize here as it will override saved settings
 
+-- Durable settings backup inside RGX-Framework's SavedVariables
+-- (RGXFrameworkDB survives RND folder loss and client crashes)
+local BACKUP_NAMESPACE = "RemoveNameplateDebuffs"
+
+local function GetBackupSettings()
+    if not RGX or not RGX.GetDB then return nil end
+    local ok, db = pcall(function() return RGX:GetDB() end)
+    if not ok or type(db) ~= "table" then return nil end
+    if type(db.RGXAddonBackups) ~= "table" then db.RGXAddonBackups = {} end
+    if type(db.RGXAddonBackups[BACKUP_NAMESPACE]) ~= "table" then
+        db.RGXAddonBackups[BACKUP_NAMESPACE] = {}
+    end
+    return db.RGXAddonBackups[BACKUP_NAMESPACE]
+end
+
+local function SyncSettingsToBackup()
+    if not RNDSettings then return end
+    local backup = GetBackupSettings()
+    if not backup then return end
+    for key in pairs(RND.defaults) do
+        backup[key] = RNDSettings[key]
+    end
+end
+
 -- Initialize addon settings
 function RND:InitializeSettings()
     -- Ensure SavedVariables table exists
+    local settingsWereMissing = (RNDSettings == nil)
     RNDSettings = RNDSettings or {}
+
+    -- Restore from the framework backup when the primary SavedVariables
+    -- were lost, so a wiped RNDSettings cannot silently re-enable the addon
+    if settingsWereMissing then
+        local backup = GetBackupSettings()
+        if backup and next(backup) ~= nil then
+            for key, value in pairs(backup) do
+                RNDSettings[key] = value
+            end
+            self.settingsRestoredFromBackup = true
+        end
+    end
 
     -- Set defaults for any missing values
     for key, value in pairs(self.defaults) do
@@ -91,6 +128,10 @@ function RND:SetSetting(key, value)
     end
 
     RNDSettings[key] = value
+    local backup = GetBackupSettings()
+    if backup then
+        backup[key] = value
+    end
     return true
 end
 
@@ -526,10 +567,20 @@ RGX:RegisterEvent("PLAYER_LOGIN", function()
         RND:InitializeSettings()
         RND.initialized = true
     end
+    if RND.settingsRestoredFromBackup then
+        RND.settingsRestoredFromBackup = nil
+        if RND.L then
+            print(CHAT_PREFIX .. " " .. (RND.L["SETTINGS_RESTORED"] or "SavedVariables were lost; settings restored from the RGX backup"))
+        end
+    end
     RND:ApplyMinimapVisibility()
     RND:DisplayWelcomeMessage()
     HookTooltips()
 end, "RND_PlayerLogin")
+
+RGX:RegisterEvent("PLAYER_LOGOUT", function()
+    SyncSettingsToBackup()
+end, "RND_PlayerLogout")
 
 -- Periodic update to continuously enforce debuff removal on dynamically created frames
 RGX:Every(0.5, function()
