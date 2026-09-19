@@ -1,6 +1,6 @@
 --=====================================================================================
 -- RND | Remove Nameplate Debuffs - locales.lua
--- Version: 3.3.1
+-- Version: 3.3.6
 -- Author: DonnieDice
 -- Description: Multi-language localization system for RND
 --=====================================================================================
@@ -56,6 +56,7 @@ local L = {
     -- Welcome Message Settings
     ["WELCOME_ENABLED"] = "Welcome message |cff00ff00enabled|r",
     ["WELCOME_DISABLED"] = "Welcome message |cffff0000disabled|r",
+    ["SETTINGS_RESTORED"] = "SavedVariables were lost last session; settings restored from the |cffff7d00RGX backup|r",
     ["HELP_WELCOME_ON"] = "Enable welcome message on login",
     ["HELP_WELCOME_OFF"] = "Disable welcome message on login",
     ["STATUS_WELCOME"] = "Welcome message:",

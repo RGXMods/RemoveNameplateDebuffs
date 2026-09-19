@@ -1,4 +1,10 @@
-﻿# v3.3.5 - 2026-09-17
+# v3.3.6 - 2026-09-19
+
+## Changes
+- Added Classic Era beta interface `16001` (WoW Forever, build 69913, project Camelot) to the TOC so the addon loads without the out-of-date flag.
+- Fixed: Settings now survive SavedVariables loss. RND mirrors all settings into `RGXFrameworkDB` (RGX-Framework's SavedVariables) and restores them — with a visible chat warning — when `RNDSettings` comes back empty. Previously a settings loss silently re-enabled debuff removal because `enabled` defaults to `true`.
+
+# v3.3.5 - 2026-09-17
 
 ## Changes
 - Added verified WoW Forever Beta `1.60.1.69893` (Interface `120007`) compatibility.
