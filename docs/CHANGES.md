@@ -1,3 +1,9 @@
+# v3.3.7-beta.1 - 2026-09-25
+
+## Changes
+- Maintenance beta for the early-beta release cycle, built and verified against RGX-Framework v2.7.8.
+- No functional changes since v3.3.6.
+
 # v3.3.6 - 2026-09-19
 
 ## Changes
