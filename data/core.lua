@@ -10,7 +10,7 @@
 RND = RND or {}
 
 -- Constants (cached for performance)
-local ADDON_VERSION = "3.3.7-beta.1"
+local ADDON_VERSION = "3.3.7-beta.2"
 local ADDON_NAME = "RemoveNameplateDebuffs"
 local ICON_PATH = "|Tinterface/addons/RemoveNameplateDebuffs/media/icon:16:16|t"
 local MINIMAP_ICON_TEXTURE = "Interface\\AddOns\\RemoveNameplateDebuffs\\media\\icon"
@@ -157,8 +157,9 @@ function RND:HideNameplateDebuffs(unitId)
         local unitFrame = nameplate.UnitFrame
 
         -- Standard Blizzard BuffFrame
+        -- (No ClearAllPoints here: restore must be a pure inverse of hide,
+        -- and some clients only re-lay aura frames when the plate is rebuilt.)
         if unitFrame.BuffFrame then
-            unitFrame.BuffFrame:ClearAllPoints()
             unitFrame.BuffFrame:SetAlpha(0)
             unitFrame.BuffFrame:Hide()
         end
@@ -224,6 +225,14 @@ function RND:HideNameplateDebuffs(unitId)
     end
 end
 
+-- Resolve the unit token for a nameplate across client flavors
+local function GetNameplateUnit(nameplate)
+    if nameplate.UnitFrame and nameplate.UnitFrame.unit then
+        return nameplate.UnitFrame.unit
+    end
+    return nameplate.namePlateUnitToken
+end
+
 -- Restore debuffs on a specific nameplate (inverse of HideNameplateDebuffs)
 function RND:RestoreNameplateDebuffs(unitId)
     local nameplate = C_NamePlate.GetNamePlateForUnit(unitId)
@@ -258,7 +267,7 @@ end
 function RND:RestoreAllNameplateDebuffs()
     for _, nameplate in pairs(C_NamePlate.GetNamePlates()) do
         if nameplate and nameplate.UnitFrame then
-            local unitId = nameplate.UnitFrame.unit
+            local unitId = GetNameplateUnit(nameplate)
             if unitId then self:RestoreNameplateDebuffs(unitId) end
         end
     end
@@ -267,12 +276,23 @@ end
 function RND:HideAllNameplateDebuffs()
     for _, nameplate in pairs(C_NamePlate.GetNamePlates()) do
         if nameplate and nameplate.UnitFrame then
-            local unitId = nameplate.UnitFrame.unit
+            local unitId = GetNameplateUnit(nameplate)
             if unitId then
                 self:HideNameplateDebuffs(unitId)
             end
         end
     end
+end
+
+-- Force Blizzard to rebuild every visible nameplate. Some client flavors
+-- only re-evaluate nameplate aura widgets when the plate is recreated, so
+-- restoring hidden widgets in place is not enough to bring debuffs back
+-- after the addon is disabled.
+function RND:ForceNameplateRefresh()
+    SetCVar("nameplateShowEnemies", 0)
+    RGX:After(0.3, function()
+        SetCVar("nameplateShowEnemies", 1)
+    end)
 end
 
 -- Test functionality by toggling nameplates
@@ -285,9 +305,8 @@ function RND:TestFunctionality()
 	print(CHAT_PREFIX .. " " .. self.L["TEST_TOGGLING"])
 
 	-- Toggle nameplates off and on to force refresh
-	SetCVar("nameplateShowEnemies", 0)
+	self:ForceNameplateRefresh()
 	RGX:After(0.5, function()
-		SetCVar("nameplateShowEnemies", 1)
 		print(CHAT_PREFIX .. " " .. self.L["TEST_COMPLETE"])
 	end)
 end
@@ -355,6 +374,7 @@ function RND:HandleMinimapClick()
 	self:SetSetting("enabled", not current)
 	if current then
 		self:RestoreAllNameplateDebuffs()
+		self:ForceNameplateRefresh()
 	else
 		self:HideAllNameplateDebuffs()
 	end
@@ -415,6 +435,7 @@ function RND:HandleSlashCommand(args)
 	elseif command == "off" or command == "disable" then
 		self:SetSetting("enabled", false)
 		self:RestoreAllNameplateDebuffs()
+		self:ForceNameplateRefresh()
 		print(CHAT_PREFIX .. " " .. self.L["ADDON_DISABLED"])
 	elseif command == "test" then
 		self:TestFunctionality()
@@ -587,7 +608,7 @@ RGX:Every(0.5, function()
     if RND.initialized and RND:GetSetting("enabled") then
         for _, nameplate in pairs(C_NamePlate.GetNamePlates()) do
             if nameplate and nameplate.UnitFrame then
-                local unitId = nameplate.UnitFrame.unit
+                local unitId = GetNameplateUnit(nameplate)
                 if unitId then
                     RND:HideNameplateDebuffs(unitId)
                 end

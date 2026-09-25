@@ -1,3 +1,8 @@
+# v3.3.7-beta.2 - 2026-09-25
+
+## Changes
+- Fixed: disabling the addon now re-shows debuffs on already-visible nameplates (forced nameplate rebuild after restore); hide no longer clears BuffFrame anchors.
+
 # v3.3.7-beta.1 - 2026-09-25
 
 ## Changes
