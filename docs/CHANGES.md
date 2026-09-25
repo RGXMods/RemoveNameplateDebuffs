@@ -1,3 +1,8 @@
+# v3.3.7-beta.3 - 2026-09-25
+
+## Changes
+- Disabling no longer forces a full nameplate rebuild (removed the visible ~0.3s blink of all enemy plates); restore happens in place. /rnd test keeps the manual rebuild fallback.
+
 # v3.3.7-beta.2 - 2026-09-25
 
 ## Changes

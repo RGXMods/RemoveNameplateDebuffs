@@ -10,7 +10,7 @@
 RND = RND or {}
 
 -- Constants (cached for performance)
-local ADDON_VERSION = "3.3.7-beta.2"
+local ADDON_VERSION = "3.3.7-beta.3"
 local ADDON_NAME = "RemoveNameplateDebuffs"
 local ICON_PATH = "|Tinterface/addons/RemoveNameplateDebuffs/media/icon:16:16|t"
 local MINIMAP_ICON_TEXTURE = "Interface\\AddOns\\RemoveNameplateDebuffs\\media\\icon"
@@ -284,10 +284,10 @@ function RND:HideAllNameplateDebuffs()
     end
 end
 
--- Force Blizzard to rebuild every visible nameplate. Some client flavors
--- only re-evaluate nameplate aura widgets when the plate is recreated, so
--- restoring hidden widgets in place is not enough to bring debuffs back
--- after the addon is disabled.
+-- Force Blizzard to rebuild every visible nameplate. Manual fallback only
+-- (`/rnd test`): the rebuild visibly blinks all enemy plates, and the
+-- automatic disable path no longer needs it because restore is a pure
+-- inverse of hide (hide never destroys the aura frame's layout).
 function RND:ForceNameplateRefresh()
     SetCVar("nameplateShowEnemies", 0)
     RGX:After(0.3, function()
@@ -374,7 +374,6 @@ function RND:HandleMinimapClick()
 	self:SetSetting("enabled", not current)
 	if current then
 		self:RestoreAllNameplateDebuffs()
-		self:ForceNameplateRefresh()
 	else
 		self:HideAllNameplateDebuffs()
 	end
@@ -435,7 +434,6 @@ function RND:HandleSlashCommand(args)
 	elseif command == "off" or command == "disable" then
 		self:SetSetting("enabled", false)
 		self:RestoreAllNameplateDebuffs()
-		self:ForceNameplateRefresh()
 		print(CHAT_PREFIX .. " " .. self.L["ADDON_DISABLED"])
 	elseif command == "test" then
 		self:TestFunctionality()
