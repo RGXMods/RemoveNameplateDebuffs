@@ -1,3 +1,30 @@
+# v3.3.8 - 2026-09-26
+
+## Changes
+- Addon list **Category** and **Group** are now `RealmGX` instead of `RGX`, so these addons group under the RealmGX heading in the interface addon list.
+
+# v3.3.7 - 2026-09-26
+
+## Changes
+- WoW Forever beta (interface 16001) fully supported alongside all existing flavors.
+- Fixed: disabling now re-shows debuffs on visible nameplates in place, without a nameplate rebuild flash; hide no longer clears BuffFrame anchors.
+
+# v3.3.7-beta.3 - 2026-09-25
+
+## Changes
+- Disabling no longer forces a full nameplate rebuild (removed the visible ~0.3s blink of all enemy plates); restore happens in place. /rnd test keeps the manual rebuild fallback.
+
+# v3.3.7-beta.2 - 2026-09-25
+
+## Changes
+- Fixed: disabling the addon now re-shows debuffs on already-visible nameplates (forced nameplate rebuild after restore); hide no longer clears BuffFrame anchors.
+
+# v3.3.7-beta.1 - 2026-09-25
+
+## Changes
+- Maintenance beta for the early-beta release cycle, built and verified against RGX-Framework v2.7.8.
+- No functional changes since v3.3.6.
+
 # v3.3.6 - 2026-09-19
 
 ## Changes
