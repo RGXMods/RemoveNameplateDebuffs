@@ -10,7 +10,7 @@
 RND = RND or {}
 
 -- Constants (cached for performance)
-local ADDON_VERSION = "3.3.7"
+local ADDON_VERSION = "3.3.8"
 local ADDON_NAME = "RemoveNameplateDebuffs"
 local ICON_PATH = "|Tinterface/addons/RemoveNameplateDebuffs/media/icon:16:16|t"
 local MINIMAP_ICON_TEXTURE = "Interface\\AddOns\\RemoveNameplateDebuffs\\media\\icon"

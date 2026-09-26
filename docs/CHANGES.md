@@ -1,3 +1,8 @@
+# v3.3.8 - 2026-09-26
+
+## Changes
+- Addon list **Category** and **Group** are now `RealmGX` instead of `RGX`, so these addons group under the RealmGX heading in the interface addon list.
+
 # v3.3.7 - 2026-09-26
 
 ## Changes
