@@ -1,3 +1,9 @@
+# v3.3.7 - 2026-09-26
+
+## Changes
+- WoW Forever beta (interface 16001) fully supported alongside all existing flavors.
+- Fixed: disabling now re-shows debuffs on visible nameplates in place, without a nameplate rebuild flash; hide no longer clears BuffFrame anchors.
+
 # v3.3.7-beta.3 - 2026-09-25
 
 ## Changes
