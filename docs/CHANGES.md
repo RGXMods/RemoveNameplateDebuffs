@@ -1,3 +1,8 @@
+# v3.3.9 - 2026-09-29
+
+## Changes
+- Added the `AGENTS.md` framework-build and interface-versioning directives; the Retail TOC interface is refreshed to the live `120100`.
+
 # v3.3.8 - 2026-09-26
 
 ## Changes
