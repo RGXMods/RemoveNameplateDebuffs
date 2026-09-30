@@ -16,7 +16,7 @@
 
 ## X-Embeds:
 ## X-License: MIT
-## X-Localizations: enUS, ruRU, deDE, frFR, esES
+## X-Localizations: enUS, deDE, esES, esMX, frFR, itIT, koKR, ptBR, ptPT, ruRU, zhCN, zhTW
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 
