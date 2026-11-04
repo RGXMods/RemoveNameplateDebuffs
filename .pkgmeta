@@ -3,6 +3,10 @@ package-as: RemoveNameplateDebuffs
 enable-nolib-creation: no
 
 ignore:
+  - .ci
+  - scripts
+  - .gitlab
+  - .gitlab-ci.yml
   - .github
   - .gitignore
   - README.md
