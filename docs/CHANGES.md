@@ -1,3 +1,8 @@
+## v3.3.11 - 2026-11-05
+
+- Releases are now built with our own packager and published to CurseForge, Wago and GitHub (and WoWInterface where a listing exists).
+- No gameplay changes.
+
 # Non-beta Candidate: [v3.3.10](changelogs/3.3.10.md)
 
 Retail 12.1.5 / Interface `120105`; client testing and publication pending.
