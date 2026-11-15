@@ -164,25 +164,25 @@ function RND:HideNameplateDebuffs(unitId)
             unitFrame.BuffFrame:Hide()
         end
 
-        -- Plater compatibility
+        -- Nameplate frames with a BuffFrame
         if unitFrame.ExtraIconFrame then
             unitFrame.ExtraIconFrame:SetAlpha(0)
             unitFrame.ExtraIconFrame:Hide()
         end
 
-        -- TidyPlates/Threat Plates compatibility
+        -- Nameplate frames with an AuraWidget
         if unitFrame.AuraWidget then
             unitFrame.AuraWidget:SetAlpha(0)
             unitFrame.AuraWidget:Hide()
         end
 
-        -- KuiNameplates compatibility
+        -- Nameplate frames with an Auras container
         if unitFrame.Auras then
             unitFrame.Auras:SetAlpha(0)
             unitFrame.Auras:Hide()
         end
 
-        -- ElvUI compatibility
+        -- Nameplate frames with Debuffs/Buffs containers
         if unitFrame.Debuffs then
             unitFrame.Debuffs:SetAlpha(0)
             unitFrame.Debuffs:Hide()
@@ -192,7 +192,7 @@ function RND:HideNameplateDebuffs(unitId)
             unitFrame.Buffs:Hide()
         end
 
-        -- NeatPlates compatibility
+        -- Nameplate frames with an AuraIconRegion
         if unitFrame.AuraIconRegion then
             unitFrame.AuraIconRegion:SetAlpha(0)
             unitFrame.AuraIconRegion:Hide()
