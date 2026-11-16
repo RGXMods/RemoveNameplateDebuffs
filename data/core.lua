@@ -84,11 +84,20 @@ function RND:InitializeSettings()
     end
 
     -- Set defaults for any missing values
+    local profiles = RNDSettings.profiles
+    local profile = type(profiles) == "table" and profiles[RNDSettings.activeProfile or "Default"]
     for key, value in pairs(self.defaults) do
         if RNDSettings[key] == nil then
-            RNDSettings[key] = value
+            local inherited
+            if type(profile) == "table" then inherited = profile[key] end
+            if type(inherited) == type(value) then RNDSettings[key] = inherited
+            else RNDSettings[key] = value end
         end
     end
+end
+
+function RND:GetSettings()
+    return RNDSettings
 end
 
 -- Get current settings with fallback to defaults (with type validation)
@@ -131,6 +140,17 @@ function RND:SetSetting(key, value)
     local backup = GetBackupSettings()
     if backup then
         backup[key] = value
+    end
+    if self.initialized then
+        if key == "enabled" then
+            if value then self:HideAllNameplateDebuffs() else self:RestoreAllNameplateDebuffs() end
+        elseif key == "minimapIconEnabled" then
+            self:ApplyMinimapVisibility()
+        end
+        if self.panel then
+            self.panel:InvalidateAllTabs()
+            self.panel:Refresh()
+        end
     end
     return true
 end
@@ -353,15 +373,17 @@ function RND:CreateMinimapButton()
                 local enabled = RND:GetSetting("enabled")
                 return {
                     { left = "|cffffffffStatus|r",           right = enabled and "|cff00ff00Enabled|r" or "|cffff0000Disabled|r" },
-                    { left = "|cffff7d00Left-Click|r",       right = "|cffffffffToggle debuff removal|r" },
+                    { left = "|cffff7d00Left-Click|r",       right = "|cffffffffOpen options|r" },
+                    { left = "|cffff7d00Right-Click|r",      right = "|cffffffffToggle debuff removal|r" },
                     { left = "|cff4ecdc4Left-Drag|r",        right = "|cffffffffMove around minimap|r" },
                     { left = "|cffe74c3cCtrl+Right-Click|r", right = "|cffffffffHide minimap icon|r" },
                 }
             end,
         },
-        onLeftClick = function() RND:HandleMinimapClick() end,
+        onLeftClick = function() RND:OpenOptions() end,
+        onRightClick = function() RND:HandleMinimapClick() end,
         onCtrlRight = function(btn)
-            btn:SetVisible(false)
+            RND:SetSetting("minimapIconEnabled", false)
             if RND.L then
                 print(CHAT_PREFIX .. " " .. (RND.L["MINIMAP_ICON_HIDDEN"] or "Minimap icon |cffff0000hidden|r. Use |cffffffff/rnd icon on|r to show it again."))
             end
@@ -372,11 +394,6 @@ end
 function RND:HandleMinimapClick()
 	local current = self:GetSetting("enabled")
 	self:SetSetting("enabled", not current)
-	if current then
-		self:RestoreAllNameplateDebuffs()
-	else
-		self:HideAllNameplateDebuffs()
-	end
 	if self.L then
 		local msg = (not current) and self.L["ADDON_ENABLED"] or self.L["ADDON_DISABLED"]
 		print(CHAT_PREFIX .. " " .. msg)
@@ -390,6 +407,7 @@ function RND:HandleMinimapClick()
 end
 
 function RND:ToggleMinimapIcon(show)
+	self:SetSetting("minimapIconEnabled", show and true or false)
 	if not self.minimapButton and show then
 		self:CreateMinimapButton()
 	end
@@ -425,15 +443,15 @@ function RND:HandleSlashCommand(args)
 
 	local command = string.lower(args or "")
 
-	if command == "" or command == "help" then
+	if command == "" or command == "options" then
+		self:OpenOptions()
+	elseif command == "help" then
 		self:ShowHelp()
 	elseif command == "on" or command == "enable" then
 		self:SetSetting("enabled", true)
-		self:HideAllNameplateDebuffs()
 		print(CHAT_PREFIX .. " " .. self.L["ADDON_ENABLED"])
 	elseif command == "off" or command == "disable" then
 		self:SetSetting("enabled", false)
-		self:RestoreAllNameplateDebuffs()
 		print(CHAT_PREFIX .. " " .. self.L["ADDON_DISABLED"])
 	elseif command == "test" then
 		self:TestFunctionality()
@@ -465,6 +483,7 @@ function RND:ShowHelp()
 	end
 
 	print(CHAT_PREFIX .. " " .. self.L["HELP_HEADER"])
+	print(CHAT_PREFIX .. " |cffffffff/rnd options|r - Open the options panel")
 	print(CHAT_PREFIX .. " " .. self.L["HELP_TEST"])
 	print(CHAT_PREFIX .. " " .. self.L["HELP_ENABLE"])
 	print(CHAT_PREFIX .. " " .. self.L["HELP_DISABLE"])

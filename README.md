@@ -130,6 +130,16 @@ RND clears debuffs from the game's own nameplates and from nameplate addons that
 ---
 
 <a id="quick-start"></a>
+### Options and launchers
+
+- `/rnd` or `/rnd options` opens the framework settings panel.
+- Left-click the minimap button or the AddOns-menu entry to open settings.
+- Right-click either launcher to toggle debuff removal. Ctrl-right-click the
+  minimap button hides it; the AddOns-menu entry remains available.
+- Panel, slash commands, and runtime use the same saved settings. Changes to
+  removal, welcome output, and icon visibility apply immediately.
+- `/rnd help` lists the remaining commands.
+
 ## <span style="color:#e74c3c">Quick Start</span>
 
 1. **<span style="color:#2dc26b">Install</span>** <span style="color:#e74c3c">R</span><span style="color:#e74c3c">N</span><span style="color:#e74c3c">D</span> <span style="color:#e67e23">from your preferred platform</span>
