@@ -129,6 +129,19 @@ if DBRGX then
     check(_G[sv].profiles and _G[sv].profiles.Default.enabled == false, "they live in the Default profile")
     RND.db.enabled = true
     check(RND.db.enabled == true and _G[sv].profiles.Default.enabled == true, "later changes write the profile")
+
+    -- The table the previous Forever build left behind: the player's choices flat, defaults in the Default profile.
+    RND = boot({
+        enabled = false, minimapIconEnabled = false, showWelcome = true, minimapAngle = 220, firstRun = false,
+        global = {}, char = {}, activeProfile = "Default",
+        profiles = { Default = { enabled = true, minimapIconEnabled = true, showWelcome = true, minimapAngle = 220,
+                                 firstRun = true, currentProfile = "Default" } },
+    })
+    check(RND.db.enabled == false and RND.db.minimapIconEnabled == false and RND.db.firstRun == false,
+        "a table with flat choices and default profiles keeps the player's choices")
+    RND.db.enabled = true
+    local reloaded = newDB(decl.db)
+    check(reloaded.enabled == true, "a later edit survives the next session")
 else
     io.write("note: framework source not found (" .. FW .. "); settings-adoption checks skipped\n")
 end
