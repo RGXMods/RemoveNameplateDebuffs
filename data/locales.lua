@@ -56,7 +56,6 @@ local L = {
     -- Welcome Message Settings
     ["WELCOME_ENABLED"] = "Welcome message |cff00ff00enabled|r",
     ["WELCOME_DISABLED"] = "Welcome message |cffff0000disabled|r",
-    ["SETTINGS_RESTORED"] = "SavedVariables were lost last session; settings restored from the |cffff7d00RGX backup|r",
     ["HELP_WELCOME_ON"] = "Enable welcome message on login",
     ["HELP_WELCOME_OFF"] = "Disable welcome message on login",
     ["STATUS_WELCOME"] = "Welcome message:",
@@ -106,7 +105,6 @@ if locale == "ruRU" then
     L["HELP_WELCOME_OFF"] = "Отключить приветственное сообщение при входе"
     L["STATUS_WELCOME"] = "Приветственное сообщение:"
     L["RGX_MODS_PREFIX"] = "|cffff7d00RGX Mods|r"
-    L["SETTINGS_RESTORED"] = "SavedVariables были потеряны в прошлой сессии; настройки восстановлены из |cffff7d00резервной копии RGX|r"
     L["MINIMAP_ICON_SHOWN"] = "Иконка у миникарты |cff00ff00показана|r"
     L["MINIMAP_ICON_HIDDEN"] = "Иконка у миникарты |cffff0000скрыта|r. Введите |cffffffff/rnd icon on|r, чтобы показать её снова."
     L["HELP_ICON_ON"] = "Показать иконку у миникарты"
@@ -150,7 +148,6 @@ elseif locale == "deDE" then
     L["HELP_WELCOME_OFF"] = "Willkommensnachricht beim Login deaktivieren"
     L["STATUS_WELCOME"] = "Willkommensnachricht:"
     L["RGX_MODS_PREFIX"] = "|cffff7d00RGX Mods|r"
-    L["SETTINGS_RESTORED"] = "SavedVariables gingen in der letzten Sitzung verloren; Einstellungen wurden aus dem |cffff7d00RGX-Backup|r wiederhergestellt"
     L["MINIMAP_ICON_SHOWN"] = "Minimap-Symbol |cff00ff00angezeigt|r"
     L["MINIMAP_ICON_HIDDEN"] = "Minimap-Symbol |cffff0000verborgen|r. Benutze |cffffffff/rnd icon on|r, um es wieder anzuzeigen."
     L["HELP_ICON_ON"] = "Minimap-Symbol anzeigen"
@@ -194,7 +191,6 @@ elseif locale == "frFR" then
     L["HELP_WELCOME_OFF"] = "Désactiver le message de bienvenue à la connexion"
     L["STATUS_WELCOME"] = "Message de bienvenue :"
     L["RGX_MODS_PREFIX"] = "|cffff7d00RGX Mods|r"
-    L["SETTINGS_RESTORED"] = "Les SavedVariables ont été perdues lors de la dernière session ; paramètres restaurés depuis la |cffff7d00sauvegarde RGX|r"
     L["MINIMAP_ICON_SHOWN"] = "Icône de la minicarte |cff00ff00affichée|r"
     L["MINIMAP_ICON_HIDDEN"] = "Icône de la minicarte |cffff0000masquée|r. Utilisez |cffffffff/rnd icon on|r pour la réafficher."
     L["HELP_ICON_ON"] = "Afficher l'icône de la minicarte"
@@ -238,7 +234,6 @@ elseif locale == "esES" or locale == "esMX" then
     L["HELP_WELCOME_OFF"] = "Deshabilitar mensaje de bienvenida al iniciar sesión"
     L["STATUS_WELCOME"] = "Mensaje de bienvenida:"
     L["RGX_MODS_PREFIX"] = "|cffff7d00RGX Mods|r"
-    L["SETTINGS_RESTORED"] = "Los SavedVariables se perdieron la sesión anterior; la configuración se restauró desde la |cffff7d00copia de seguridad de RGX|r"
     L["MINIMAP_ICON_SHOWN"] = "Icono del minimapa |cff00ff00mostrado|r"
     L["MINIMAP_ICON_HIDDEN"] = "Icono del minimapa |cffff0000oculto|r. Usa |cffffffff/rnd icon on|r para mostrarlo de nuevo."
     L["HELP_ICON_ON"] = "Mostrar el icono del minimapa"
@@ -272,7 +267,6 @@ elseif locale == "itIT" then
     L["COMMUNITY_MESSAGE"] = "Parte della comunità RealmGX - unisciti a noi su discord.gg/N7kdKAHVVF"
     L["WELCOME_ENABLED"] = "Messaggio di benvenuto |cff00ff00abilitato|r"
     L["WELCOME_DISABLED"] = "Messaggio di benvenuto |cffff0000disabilitato|r"
-    L["SETTINGS_RESTORED"] = "I SavedVariables sono andati persi nell'ultima sessione; impostazioni ripristinate dal |cffff7d00backup RGX|r"
     L["HELP_WELCOME_ON"] = "Abilita il messaggio di benvenuto all'accesso"
     L["HELP_WELCOME_OFF"] = "Disabilita il messaggio di benvenuto all'accesso"
     L["STATUS_WELCOME"] = "Messaggio di benvenuto:"
@@ -309,7 +303,6 @@ elseif locale == "koKR" then
     L["COMMUNITY_MESSAGE"] = "RealmGX 커뮤니티의 일부 - discord.gg/N7kdKAHVVF에서 함께하세요"
     L["WELCOME_ENABLED"] = "환영 메시지 |cff00ff00활성화됨|r"
     L["WELCOME_DISABLED"] = "환영 메시지 |cffff0000비활성화됨|r"
-    L["SETTINGS_RESTORED"] = "지난 세션에서 SavedVariables가 손실되어 |cffff7d00RGX 백업|r에서 설정이 복원되었습니다"
     L["HELP_WELCOME_ON"] = "로그인 시 환영 메시지 활성화"
     L["HELP_WELCOME_OFF"] = "로그인 시 환영 메시지 비활성화"
     L["STATUS_WELCOME"] = "환영 메시지:"
@@ -346,7 +339,6 @@ elseif locale == "ptBR" then
     L["COMMUNITY_MESSAGE"] = "Parte da comunidade RealmGX - junte-se a nós em discord.gg/N7kdKAHVVF"
     L["WELCOME_ENABLED"] = "Mensagem de boas-vindas |cff00ff00habilitada|r"
     L["WELCOME_DISABLED"] = "Mensagem de boas-vindas |cffff0000desabilitada|r"
-    L["SETTINGS_RESTORED"] = "Os SavedVariables foram perdidos na última sessão; configurações restauradas do |cffff7d00backup do RGX|r"
     L["HELP_WELCOME_ON"] = "Habilitar mensagem de boas-vindas ao entrar"
     L["HELP_WELCOME_OFF"] = "Desabilitar mensagem de boas-vindas ao entrar"
     L["STATUS_WELCOME"] = "Mensagem de boas-vindas:"
@@ -383,7 +375,6 @@ elseif locale == "ptPT" then
     L["COMMUNITY_MESSAGE"] = "Parte da comunidade RealmGX - junte-se a nós em discord.gg/N7kdKAHVVF"
     L["WELCOME_ENABLED"] = "Mensagem de boas-vindas |cff00ff00habilitada|r"
     L["WELCOME_DISABLED"] = "Mensagem de boas-vindas |cffff0000desabilitada|r"
-    L["SETTINGS_RESTORED"] = "Os SavedVariables foram perdidos na última sessão; configurações restauradas do |cffff7d00backup do RGX|r"
     L["HELP_WELCOME_ON"] = "Habilitar mensagem de boas-vindas ao entrar"
     L["HELP_WELCOME_OFF"] = "Desabilitar mensagem de boas-vindas ao entrar"
     L["STATUS_WELCOME"] = "Mensagem de boas-vindas:"
@@ -420,7 +411,6 @@ elseif locale == "zhCN" then
     L["COMMUNITY_MESSAGE"] = "RealmGX 社区的一员 - 在 discord.gg/N7kdKAHVVF 加入我们"
     L["WELCOME_ENABLED"] = "欢迎消息|cff00ff00已启用|r"
     L["WELCOME_DISABLED"] = "欢迎消息|cffff0000已禁用|r"
-    L["SETTINGS_RESTORED"] = "上次会话 SavedVariables 丢失；已从 |cffff7d00RGX 备份|r恢复设置"
     L["HELP_WELCOME_ON"] = "登录时启用欢迎消息"
     L["HELP_WELCOME_OFF"] = "登录时禁用欢迎消息"
     L["STATUS_WELCOME"] = "欢迎消息:"
@@ -457,7 +447,6 @@ elseif locale == "zhTW" then
     L["COMMUNITY_MESSAGE"] = "RealmGX 社群的一員 - 在 discord.gg/N7kdKAHVVF 加入我們"
     L["WELCOME_ENABLED"] = "歡迎訊息|cff00ff00已啟用|r"
     L["WELCOME_DISABLED"] = "歡迎訊息|cffff0000已停用|r"
-    L["SETTINGS_RESTORED"] = "上次連線 SavedVariables 遺失；已從 |cffff7d00RGX 備份|r還原設定"
     L["HELP_WELCOME_ON"] = "登入時啟用歡迎訊息"
     L["HELP_WELCOME_OFF"] = "登入時停用歡迎訊息"
     L["STATUS_WELCOME"] = "歡迎訊息:"
