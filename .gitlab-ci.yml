@@ -15,4 +15,4 @@ test:rnd:
   script:
     - apk add --no-cache lua5.1 git
     - git clone --depth 1 https://github.com/RGXMods/RGX-Framework.git ../RGX-Framework
-    - RGXFW_PATH=../RGX-Framework lua5.1 tests/OptionsLifecycle.test.lua
+    - RGXFW_PATH=../RGX-Framework lua5.1 tests/Rnd.test.lua

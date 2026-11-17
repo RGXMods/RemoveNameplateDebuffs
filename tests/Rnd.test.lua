@@ -130,6 +130,13 @@ if DBRGX then
     RND.db.enabled = true
     check(RND.db.enabled == true and _G[sv].profiles.Default.enabled == true, "later changes write the profile")
 
+    -- The mixed table needs the framework release that applies flat choices once (raw.flatAdopted); an older
+    -- published framework keeps the profile defaults, so that check waits for the release.
+    local mixedFixed = read(FW .. "/core/systems/database.lua"):find("flatAdopted", 1, true) ~= nil
+    if not mixedFixed then
+        io.write("note: this framework predates the mixed-table migration; that check skipped\n")
+    end
+    if mixedFixed then
     -- The table the previous Forever build left behind: the player's choices flat, defaults in the Default profile.
     RND = boot({
         enabled = false, minimapIconEnabled = false, showWelcome = true, minimapAngle = 220, firstRun = false,
@@ -142,6 +149,7 @@ if DBRGX then
     RND.db.enabled = true
     local reloaded = newDB(decl.db)
     check(reloaded.enabled == true, "a later edit survives the next session")
+    end
 else
     io.write("note: framework source not found (" .. FW .. "); settings-adoption checks skipped\n")
 end
