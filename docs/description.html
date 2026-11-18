@@ -22,8 +22,6 @@
 
 <span style="color: #4ecdc4;"><strong>Whitelist System</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;"><em>(Coming Soon)</em> Choose which debuffs to keep visible.</span>
 
-<span style="color: #ff6b6b;"><strong>Plater Compatible</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;"><em>(In Development)</em> Full integration with Plater addon.</span>
-
 <span style="color: #2dc26b;"><strong>Multi-Version</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Works across all WoW versions — Retail, Mists, Cataclysm, and Classic Era!</span>
 
 <span style="color: #e74c3c;"><strong>Multi-Language</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">Supports 12 languages with automatic detection.</span>
@@ -32,7 +30,7 @@
 
 <span style="color: #b96ad9;"><strong>Error Protected</strong></span> <span style="color: #3598db;">-</span> <span style="color: #e67e23;">pcall error handling throughout for maximum stability.</span>
 
-**<span style="color: #ff6b6b;">Nameplate Addon Compatibility</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">Full support for</span> <span style="color: #4ecdc4;">Blizzard Default</span><span style="color: #e67e23;">,</span> <span style="color: #4ecdc4;">ElvUI</span><span style="color: #e67e23;">,</span> <span style="color: #4ecdc4;">KUI Nameplates</span><span style="color: #e67e23;">, and</span> <span style="color: #4ecdc4;">TidyPlates</span><span style="color: #e67e23;">. Partial support for</span> <span style="color: #e74c3c;">Plater</span> <span style="color: #e67e23;">(full support in development).</span>
+**<span style="color: #ff6b6b;">Nameplate Compatibility</span><span style="color: #3598db;">:</span>** <span style="color: #e67e23;">Clears debuffs from the game's own nameplates and from nameplate addons that keep auras in the standard aura containers. A nameplate addon that draws auras its own way keeps showing them; turn its aura display off in that addon.</span>
 
 ***
 
@@ -113,10 +111,9 @@ _<span style="color:#e67e23">See</span> [<span style="color:#e74c3c">GitHub Rele
 
 ## <span style="color:#e74c3c">Known Issues</span>
 
-### <span style="color:#b96ad9">Plater Compatibility</span>
-- **<span style="color:#ff6b6b">Issue</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">RND currently doesn't override Plater's debuff settings</span>
-- **<span style="color:#2dc26b">Workaround</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Manually blacklist debuffs in Plater's settings</span>
-- **<span style="color:#e74c3c">Status</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Full compatibility patch in development</span>
+### <span style="color:#b96ad9">Nameplate addons that draw their own auras</span>
+- **<span style="color:#ff6b6b">Issue</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">RND cannot clear auras a nameplate addon draws itself</span>
+- **<span style="color:#2dc26b">Workaround</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Turn off debuff display in that addon's own settings</span>
 
 _<span style="color:#e67e23">For updates on this issue, join our</span> [<span style="color:#7289da">Discord</span>](https://discord.gg/hK9N3esnce)<span style="color:#e67e23">.</span>_
 
@@ -126,7 +123,7 @@ _<span style="color:#e67e23">For updates on this issue, join our</span> [<span s
 
 **<span style="color:#ff6b6b">Debuffs still showing?</span>**
 - <span style="color:#e67e23">Ensure the addon is enabled with</span> `/rnd status`
-- <span style="color:#e67e23">If you are using Plater, see the workaround in Known Issues above</span>
+- <span style="color:#e67e23">If you use another nameplate addon, see Known Issues above</span>
 - <span style="color:#e67e23">Try</span> `/reload` <span style="color:#e67e23">to refresh the UI</span>
 
 **<span style="color:#ff6b6b">Addon not working after update?</span>**
@@ -143,7 +140,6 @@ _<span style="color:#e67e23">For updates on this issue, join our</span> [<span s
 
 - <span style="color:#2dc26b">**Whitelist System**</span> <span style="color:#e67e23">— Choose specific debuffs to keep visible</span>
 - <span style="color:#e74c3c">**Configuration UI**</span> <span style="color:#e67e23">— In-game settings panel</span>
-- <span style="color:#b96ad9">**Full Plater Integration**</span> <span style="color:#e67e23">— Native Plater support</span>
 - <span style="color:#4ecdc4">**Profile System**</span> <span style="color:#e67e23">— Save and share configurations</span>
 - <span style="color:#ff6b6b">**Advanced Filtering**</span> <span style="color:#e67e23">— Filter by debuff type or source class</span>
 

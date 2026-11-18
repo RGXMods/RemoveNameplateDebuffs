@@ -115,7 +115,6 @@ _<span style="color:#e67e23">Every donation helps fund new features and improvem
 | **Clean Nameplates** | Removes all debuff clutter from enemy nameplates |
 | **Lightweight** | Minimal performance impact, maximum visual clarity |
 | **Whitelist System** | *(Coming Soon)* Choose which debuffs to keep visible |
-| **Plater Compatible** | *(In Development)* Full integration with Plater addon |
 | **Zero Configuration** | Works immediately after installation |
 | **Multi-Version** | Works across supported WoW versions |
 | **Multi-Language** | Supports 12 languages with automatic detection |
@@ -124,23 +123,23 @@ _<span style="color:#e67e23">Every donation helps fund new features and improvem
 
 </div>
 
-## <span style="color:#e74c3c">Nameplate Addon Compatibility</span>
+## <span style="color:#e74c3c">Nameplate Compatibility</span>
 
-<div align="center">
-
-| Addon | Status |
-|-------|--------|
-| **Blizzard Default** | Full Compatibility |
-| **ElvUI** | Full Compatibility |
-| **KUI Nameplates** | Full Compatibility |
-| **TidyPlates** | Full Compatibility |
-| **Plater** | Partial — See Known Issues |
-
-</div>
+RND clears debuffs from the game's own nameplates and from nameplate addons that keep auras in the standard aura containers. A nameplate addon that draws auras its own way keeps showing them; turn its aura display off in that addon.
 
 ---
 
 <a id="quick-start"></a>
+### Options and launchers
+
+- `/rnd` or `/rnd options` opens the framework settings panel.
+- Left-click the minimap button or the AddOns-menu entry to open settings.
+- Right-click either launcher to toggle debuff removal. Ctrl-right-click the
+  minimap button hides it; the AddOns-menu entry remains available.
+- Panel, slash commands, and runtime use the same saved settings. Changes to
+  removal, welcome output, and icon visibility apply immediately.
+- `/rnd help` lists the remaining commands.
+
 ## <span style="color:#e74c3c">Quick Start</span>
 
 1. **<span style="color:#2dc26b">Install</span>** <span style="color:#e74c3c">R</span><span style="color:#e74c3c">N</span><span style="color:#e74c3c">D</span> <span style="color:#e67e23">from your preferred platform</span>
@@ -222,7 +221,7 @@ _<span style="color:#e67e23">See</span> [<span style="color:#e74c3c">GitHub Rele
 
 ### <span style="color:#4ecdc4">Recommended Setup:</span>
 - **<span style="color:#2dc26b">Default:</span>** <span style="color:#e67e23">RND works out of the box — no setup needed</span>
-- **<span style="color:#e74c3c">Plater Users:</span>** <span style="color:#e67e23">See the known issues section for a workaround</span>
+- **<span style="color:#e74c3c">Other nameplate addons:</span>** <span style="color:#e67e23">See the known issues section</span>
 - **<span style="color:#b96ad9">Verify:</span>** <span style="color:#e67e23">Use `/rnd status` to confirm the addon is active</span>
 
 </td>
@@ -244,10 +243,9 @@ _<span style="color:#e67e23">See</span> [<span style="color:#e74c3c">GitHub Rele
 
 ## <span style="color:#e74c3c">Known Issues</span>
 
-### <span style="color:#b96ad9">Plater Compatibility</span>
-- **<span style="color:#ff6b6b">Issue</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">RND currently doesn't override Plater's debuff settings</span>
-- **<span style="color:#2dc26b">Workaround</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Manually blacklist debuffs in Plater's settings</span>
-- **<span style="color:#e74c3c">Status</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Full compatibility patch in development</span>
+### <span style="color:#b96ad9">Nameplate addons that draw their own auras</span>
+- **<span style="color:#ff6b6b">Issue</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">RND cannot clear auras a nameplate addon draws itself</span>
+- **<span style="color:#2dc26b">Workaround</span><span style="color:#3598db">:</span>** <span style="color:#e67e23">Turn off debuff display in that addon's own settings</span>
 
 _<span style="color:#e67e23">For updates on this issue, join our</span> [<span style="color:#7289da">Discord</span>](https://discord.gg/hK9N3esnce)<span style="color:#e67e23">.</span>_
 
@@ -257,7 +255,7 @@ _<span style="color:#e67e23">For updates on this issue, join our</span> [<span s
 
 **<span style="color:#ff6b6b">Debuffs still showing?</span>**
 - <span style="color:#e67e23">Ensure the addon is enabled with</span> `/rnd status`
-- <span style="color:#e67e23">If you are using Plater, see the workaround in Known Issues above</span>
+- <span style="color:#e67e23">If you use another nameplate addon, see Known Issues above</span>
 - <span style="color:#e67e23">Try</span> `/reload` <span style="color:#e67e23">to refresh the UI</span>
 
 **<span style="color:#ff6b6b">Addon not working after update?</span>**
@@ -274,7 +272,6 @@ _<span style="color:#e67e23">For updates on this issue, join our</span> [<span s
 
 - <span style="color:#2dc26b">**Whitelist System**</span> <span style="color:#e67e23">— Choose specific debuffs to keep visible</span>
 - <span style="color:#e74c3c">**Configuration UI**</span> <span style="color:#e67e23">— In-game settings panel</span>
-- <span style="color:#b96ad9">**Full Plater Integration**</span> <span style="color:#e67e23">— Native Plater support</span>
 - <span style="color:#4ecdc4">**Profile System**</span> <span style="color:#e67e23">— Save and share configurations</span>
 - <span style="color:#ff6b6b">**Advanced Filtering**</span> <span style="color:#e67e23">— Filter by debuff type or source class</span>
 

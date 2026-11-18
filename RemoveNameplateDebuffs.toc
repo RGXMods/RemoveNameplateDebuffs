@@ -1,7 +1,8 @@
 ## Interface: 120105
-## Version: v3.3.11
+## Version: v3.3.12
 ## X-WoWI-ID: 26320
 ## RequiredDeps: RGX-Framework
+## X-RGX-Framework-MinVersion: 2.19.0
 ## Title: |cffff7d00R|r|cffffffffemove|r |cffff7d00N|r|cffffffffameplate|r |cffff7d00D|r|cffffffffebuffs|r|cffff7d00!|r
 ## Notes: Remove Debuff Icons from Enemy Nameplates
 ## Author: DonnieDice

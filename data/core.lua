@@ -1,143 +1,49 @@
 --=====================================================================================
 -- RND | Remove Nameplate Debuffs! - core.lua
--- Version: 3.3.6
 -- Author: DonnieDice
--- Description: Professional World of Warcraft addon that removes debuff icons from nameplates
 -- RGX Mods Collection - RealmGX Community Project
+--
+-- One RGXAddon declaration owns everything the framework already provides: the saved
+-- settings (RGX database, adopting the old flat table), the options panel, /rnd, the
+-- minimap button, the nameplate event and the enforcement timer. What stays here is the
+-- nameplate work itself.
 --=====================================================================================
 
--- Global addon namespace and version info
+local RGX = _G.RGXFramework
+if type(RGX) ~= "table" or type(RGX.RequireContract) ~= "function" then
+    error("RemoveNameplateDebuffs requires RGX-Framework 2.19.0 or newer with the RGX contract compatibility handshake. Update RGX-Framework.", 0)
+end
+RGX:RequireContract("RemoveNameplateDebuffs", 1, "2.19.0")
+
 RND = RND or {}
 
--- Constants (cached for performance)
-local ADDON_VERSION = "3.3.11"
 local ADDON_NAME = "RemoveNameplateDebuffs"
-local ICON_PATH = "|Tinterface/addons/RemoveNameplateDebuffs/media/icon:16:16|t"
+local ICON_PATH = "|TInterface/AddOns/RemoveNameplateDebuffs/media/icon:16:16|t"
 local MINIMAP_ICON_TEXTURE = "Interface\\AddOns\\RemoveNameplateDebuffs\\media\\icon"
 
 -- Chat prefix with orange R, N, D in [RND]
 local CHAT_PREFIX = ICON_PATH .. " - |cffffffff[|r|cffff7d00RND|r|cffffffff]|r"
 
-local RGX = assert(_G.RGXFramework, "RND: RGX-Framework not loaded")
-local MM  = RGX:GetMinimap()
-
--- Set addon properties
-RND.version = ADDON_VERSION
 RND.addonName = ADDON_NAME
 
--- Default configuration
-RND.defaults = {
-    enabled = true,
-    showWelcome = true,
-    firstRun = true,
-    minimapIconEnabled = true,
-    minimapAngle = 220
-}
+local function Metadata(field)
+    local get = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+    return get and get(ADDON_NAME, field) or nil
+end
+RND.version = tostring(Metadata("Version") or "unknown"):gsub("^v", "")
 
--- Minimap button state
-RND.minimapButton = nil
-RND.defaultMinimapAngle = 220
-
--- Saved variables will be loaded by WoW after ADDON_LOADED event
--- Do not initialize here as it will override saved settings
-
--- Durable settings backup inside RGX-Framework's SavedVariables
--- (RGXFrameworkDB survives RND folder loss and client crashes)
-local BACKUP_NAMESPACE = "RemoveNameplateDebuffs"
-
-local function GetBackupSettings()
-    if not RGX or not RGX.GetDB then return nil end
-    local ok, db = pcall(function() return RGX:GetDB() end)
-    if not ok or type(db) ~= "table" then return nil end
-    if type(db.RGXAddonBackups) ~= "table" then db.RGXAddonBackups = {} end
-    if type(db.RGXAddonBackups[BACKUP_NAMESPACE]) ~= "table" then
-        db.RGXAddonBackups[BACKUP_NAMESPACE] = {}
-    end
-    return db.RGXAddonBackups[BACKUP_NAMESPACE]
+-- Settings live in the RGX database (RND.db, created by the declaration below).
+function RND:IsEnabled()
+    return self.db == nil or self.db.enabled ~= false
 end
 
-local function SyncSettingsToBackup()
-    if not RNDSettings then return end
-    local backup = GetBackupSettings()
-    if not backup then return end
-    for key in pairs(RND.defaults) do
-        backup[key] = RNDSettings[key]
-    end
-end
-
--- Initialize addon settings
-function RND:InitializeSettings()
-    -- Ensure SavedVariables table exists
-    local settingsWereMissing = (RNDSettings == nil)
-    RNDSettings = RNDSettings or {}
-
-    -- Restore from the framework backup when the primary SavedVariables
-    -- were lost, so a wiped RNDSettings cannot silently re-enable the addon
-    if settingsWereMissing then
-        local backup = GetBackupSettings()
-        if backup and next(backup) ~= nil then
-            for key, value in pairs(backup) do
-                RNDSettings[key] = value
-            end
-            self.settingsRestoredFromBackup = true
-        end
-    end
-
-    -- Set defaults for any missing values
-    for key, value in pairs(self.defaults) do
-        if RNDSettings[key] == nil then
-            RNDSettings[key] = value
-        end
-    end
-end
-
--- Get current settings with fallback to defaults (with type validation)
-function RND:GetSetting(key)
-    if not key or type(key) ~= "string" then
-        return nil
-    end
-
-    -- Return default if SavedVariables not loaded yet
-    if not RNDSettings then
-        return self.defaults[key]
-    end
-
-    local value = RNDSettings[key]
-    if value ~= nil then
-        return value
-    end
-
-    return self.defaults[key]
-end
-
--- Set a setting value (with validation)
-function RND:SetSetting(key, value)
-    if not key or type(key) ~= "string" or self.defaults[key] == nil then
-        return false
-    end
-
-    -- Ensure SavedVariables table exists
-    if not RNDSettings then
-        RNDSettings = {}
-    end
-
-    -- Type validation based on default values
-    local defaultType = type(self.defaults[key])
-    if type(value) ~= defaultType then
-        return false
-    end
-
-    RNDSettings[key] = value
-    local backup = GetBackupSettings()
-    if backup then
-        backup[key] = value
-    end
-    return true
+function RND:Say(message)
+    print(CHAT_PREFIX .. " " .. message)
 end
 
 -- Hide debuffs on a specific nameplate
 function RND:HideNameplateDebuffs(unitId)
-    if not self:GetSetting("enabled") then
+    if not self:IsEnabled() then
         return
     end
 
@@ -164,25 +70,25 @@ function RND:HideNameplateDebuffs(unitId)
             unitFrame.BuffFrame:Hide()
         end
 
-        -- Plater compatibility
+        -- Nameplate frames with a BuffFrame
         if unitFrame.ExtraIconFrame then
             unitFrame.ExtraIconFrame:SetAlpha(0)
             unitFrame.ExtraIconFrame:Hide()
         end
 
-        -- TidyPlates/Threat Plates compatibility
+        -- Nameplate frames with an AuraWidget
         if unitFrame.AuraWidget then
             unitFrame.AuraWidget:SetAlpha(0)
             unitFrame.AuraWidget:Hide()
         end
 
-        -- KuiNameplates compatibility
+        -- Nameplate frames with an Auras container
         if unitFrame.Auras then
             unitFrame.Auras:SetAlpha(0)
             unitFrame.Auras:Hide()
         end
 
-        -- ElvUI compatibility
+        -- Nameplate frames with Debuffs/Buffs containers
         if unitFrame.Debuffs then
             unitFrame.Debuffs:SetAlpha(0)
             unitFrame.Debuffs:Hide()
@@ -192,7 +98,7 @@ function RND:HideNameplateDebuffs(unitId)
             unitFrame.Buffs:Hide()
         end
 
-        -- NeatPlates compatibility
+        -- Nameplate frames with an AuraIconRegion
         if unitFrame.AuraIconRegion then
             unitFrame.AuraIconRegion:SetAlpha(0)
             unitFrame.AuraIconRegion:Hide()
@@ -313,196 +219,148 @@ end
 
 -- Display welcome message on player login
 function RND:DisplayWelcomeMessage()
-	if not self:GetSetting("showWelcome") then
-		return
-	end
-
-	-- Ensure localization exists
-	if not self.L then
-		print(CHAT_PREFIX .. " |cffff0000Error:|r Localization not loaded")
-		return
-	end
-
-	-- Welcome messages matching RGX Mods standard (same format as BLU)
-	print(CHAT_PREFIX .. " Welcome. " .. self.L["TYPE_HELP"])
-	print(CHAT_PREFIX .. " |cffffff00Version:|r |cff8080ff" .. ADDON_VERSION .. "|r")
-
-	-- Show community message on first run
-	if self:GetSetting("firstRun") then
-		print(CHAT_PREFIX .. " " .. self.L["COMMUNITY_MESSAGE"])
-		self:SetSetting("firstRun", false)
-	end
-end
-
--- =====================================================================================
--- Minimap Button
--- =====================================================================================
-
-function RND:CreateMinimapButton()
-    if self.minimapButton then return end
-    self.minimapButton = MM:Create({
-        name         = "RND_MinimapButton",
-        icon         = MINIMAP_ICON_TEXTURE,
-        defaultAngle = self.defaultMinimapAngle,
-        storage      = RNDSettings,
-        angleKey     = "minimapAngle",
-        enabledKey   = "minimapIconEnabled",
-        tooltip = {
-            title    = "|cffff7d00R|r|cffffffffemove|r |cffff7d00N|r|cffffffffameplate|r |cffff7d00D|r|cffffffffebuffs|r|cffff7d00!|r",
-            getLines = function()
-                local enabled = RND:GetSetting("enabled")
-                return {
-                    { left = "|cffffffffStatus|r",           right = enabled and "|cff00ff00Enabled|r" or "|cffff0000Disabled|r" },
-                    { left = "|cffff7d00Left-Click|r",       right = "|cffffffffToggle debuff removal|r" },
-                    { left = "|cff4ecdc4Left-Drag|r",        right = "|cffffffffMove around minimap|r" },
-                    { left = "|cffe74c3cCtrl+Right-Click|r", right = "|cffffffffHide minimap icon|r" },
-                }
-            end,
-        },
-        onLeftClick = function() RND:HandleMinimapClick() end,
-        onCtrlRight = function(btn)
-            btn:SetVisible(false)
-            if RND.L then
-                print(CHAT_PREFIX .. " " .. (RND.L["MINIMAP_ICON_HIDDEN"] or "Minimap icon |cffff0000hidden|r. Use |cffffffff/rnd icon on|r to show it again."))
-            end
-        end,
-    })
-end
-
-function RND:HandleMinimapClick()
-	local current = self:GetSetting("enabled")
-	self:SetSetting("enabled", not current)
-	if current then
-		self:RestoreAllNameplateDebuffs()
-	else
-		self:HideAllNameplateDebuffs()
-	end
-	if self.L then
-		local msg = (not current) and self.L["ADDON_ENABLED"] or self.L["ADDON_DISABLED"]
-		print(CHAT_PREFIX .. " " .. msg)
-	end
-	if self.minimapButton then
-		local frame = self.minimapButton.frame
-		if GameTooltip:IsShown() and GameTooltip:GetOwner() == frame then
-			frame:GetScript("OnEnter")()
-		end
-	end
-end
-
-function RND:ToggleMinimapIcon(show)
-	if not self.minimapButton and show then
-		self:CreateMinimapButton()
-	end
-	if self.minimapButton then
-		self.minimapButton:SetVisible(show and true or false)
-	end
-	if self.L then
-		if show then
-			print(CHAT_PREFIX .. " " .. (self.L["MINIMAP_ICON_SHOWN"] or "Minimap icon |cff00ff00shown|r"))
-		else
-			print(CHAT_PREFIX .. " " .. (self.L["MINIMAP_ICON_HIDDEN"] or "Minimap icon |cffff0000hidden|r. Use |cffffffff/rnd icon on|r to show it again."))
-		end
-	end
-end
-
-function RND:ApplyMinimapVisibility()
-    local shouldShow = self:GetSetting("minimapIconEnabled")
-    if shouldShow and not self.minimapButton then
-        self:CreateMinimapButton()
+    if self.db.showWelcome == false then return end
+    if not self.L then
+        self:Say("|cffff0000Error:|r Localization not loaded")
+        return
     end
+
+    -- Welcome messages matching RGX Mods standard (same format as BLU)
+    self:Say("Welcome. " .. self.L["TYPE_HELP"])
+    self:Say("|cffffff00Version:|r |cff8080ff" .. self.version .. "|r")
+
+    -- Show community message on first run
+    if self.db.firstRun ~= false then
+        self:Say(self.L["COMMUNITY_MESSAGE"])
+        self.db.firstRun = false
+    end
+end
+
+-- =====================================================================================
+-- Settings changes (panel toggles, minimap clicks and slash commands all land here)
+-- =====================================================================================
+
+function RND:RefreshPanel()
+    if self.panel then
+        self.panel:InvalidateAllTabs()
+        self.panel:Refresh()
+    end
+end
+
+-- Apply the enabled state to the nameplates already on screen (the value is already stored).
+function RND:ApplyEnabled(enabled)
+    if enabled then
+        self:HideAllNameplateDebuffs()
+    else
+        self:RestoreAllNameplateDebuffs()
+    end
+end
+
+function RND:SetEnabled(enabled)
+    enabled = enabled and true or false
+    self.db.enabled = enabled
+    self:ApplyEnabled(enabled)
+    self:RefreshPanel()
+end
+
+-- Show or hide the minimap button (the value is stored by the button; the compartment entry stays).
+function RND:ApplyMinimap(show)
     if self.minimapButton then
-        self.minimapButton:SetVisible(shouldShow and true or false)
+        self.minimapButton:SetVisible(show and true or false)
     end
+end
+
+function RND:SetMinimapShown(show)
+    show = show and true or false
+    self.db.minimapIconEnabled = show
+    self:ApplyMinimap(show)
+    self:RefreshPanel()
 end
 
 -- Slash command handler
 function RND:HandleSlashCommand(args)
-	-- Ensure localization exists
-	if not self.L then
-		print(CHAT_PREFIX .. " |cffff0000Error:|r Localization not loaded")
-		return
-	end
+    if not self.L then
+        self:Say("|cffff0000Error:|r Localization not loaded")
+        return
+    end
 
-	local command = string.lower(args or "")
+    local command = string.lower(args or "")
 
-	if command == "" or command == "help" then
-		self:ShowHelp()
-	elseif command == "on" or command == "enable" then
-		self:SetSetting("enabled", true)
-		self:HideAllNameplateDebuffs()
-		print(CHAT_PREFIX .. " " .. self.L["ADDON_ENABLED"])
-	elseif command == "off" or command == "disable" then
-		self:SetSetting("enabled", false)
-		self:RestoreAllNameplateDebuffs()
-		print(CHAT_PREFIX .. " " .. self.L["ADDON_DISABLED"])
-	elseif command == "test" then
-		self:TestFunctionality()
-	elseif command == "status" then
-		self:ShowStatus()
-	elseif command == "welcome on" then
-		self:SetSetting("showWelcome", true)
-		print(CHAT_PREFIX .. " " .. (self.L["WELCOME_ENABLED"] or "Welcome message |cff00ff00enabled|r"))
-	elseif command == "welcome off" then
-		self:SetSetting("showWelcome", false)
-		print(CHAT_PREFIX .. " " .. (self.L["WELCOME_DISABLED"] or "Welcome message |cffff0000disabled|r"))
-	elseif command == "icon" then
-		self:ShowHelp()
-	elseif command == "icon on" then
-		self:ToggleMinimapIcon(true)
-	elseif command == "icon off" then
-		self:ToggleMinimapIcon(false)
-	else
-		print(CHAT_PREFIX .. " " .. self.L["ERROR_PREFIX"] .. " " .. self.L["ERROR_UNKNOWN_COMMAND"])
-	end
+    if command == "" or command == "options" then
+        if self.panel then self.panel:Open() end
+    elseif command == "help" then
+        self:ShowHelp()
+    elseif command == "on" or command == "enable" then
+        self:SetEnabled(true)
+        self:Say(self.L["ADDON_ENABLED"])
+    elseif command == "off" or command == "disable" then
+        self:SetEnabled(false)
+        self:Say(self.L["ADDON_DISABLED"])
+    elseif command == "test" then
+        self:TestFunctionality()
+    elseif command == "status" then
+        self:ShowStatus()
+    elseif command == "welcome on" then
+        self.db.showWelcome = true
+        self:RefreshPanel()
+        self:Say(self.L["WELCOME_ENABLED"] or "Welcome message |cff00ff00enabled|r")
+    elseif command == "welcome off" then
+        self.db.showWelcome = false
+        self:RefreshPanel()
+        self:Say(self.L["WELCOME_DISABLED"] or "Welcome message |cffff0000disabled|r")
+    elseif command == "icon on" then
+        self:SetMinimapShown(true)
+        self:Say(self.L["MINIMAP_ICON_SHOWN"] or "Minimap icon |cff00ff00shown|r")
+    elseif command == "icon off" then
+        self:SetMinimapShown(false)
+        self:Say(self.L["MINIMAP_ICON_HIDDEN"] or "Minimap icon |cffff0000hidden|r. Use |cffffffff/rnd icon on|r to show it again.")
+    elseif command == "icon" then
+        self:ShowHelp()
+    else
+        self:Say(self.L["ERROR_PREFIX"] .. " " .. self.L["ERROR_UNKNOWN_COMMAND"])
+    end
 end
 
 -- Show help information
 function RND:ShowHelp()
-	-- Ensure localization exists
-	if not self.L then
-		print(CHAT_PREFIX .. " |cffff0000Error:|r Localization not loaded")
-		return
-	end
+    if not self.L then
+        self:Say("|cffff0000Error:|r Localization not loaded")
+        return
+    end
 
-	print(CHAT_PREFIX .. " " .. self.L["HELP_HEADER"])
-	print(CHAT_PREFIX .. " " .. self.L["HELP_TEST"])
-	print(CHAT_PREFIX .. " " .. self.L["HELP_ENABLE"])
-	print(CHAT_PREFIX .. " " .. self.L["HELP_DISABLE"])
-	print(CHAT_PREFIX .. " " .. self.L["HELP_STATUS"])
-	print(CHAT_PREFIX .. " |cffffffff/rnd welcome on|r - " .. (self.L["HELP_WELCOME_ON"] or "Enable welcome message"))
-	print(CHAT_PREFIX .. " |cffffffff/rnd welcome off|r - " .. (self.L["HELP_WELCOME_OFF"] or "Disable welcome message"))
-	print(CHAT_PREFIX .. " |cffffffff/rnd icon on|r - " .. (self.L["HELP_ICON_ON"] or "Show minimap icon"))
-	print(CHAT_PREFIX .. " |cffffffff/rnd icon off|r - " .. (self.L["HELP_ICON_OFF"] or "Hide minimap icon"))
+    self:Say(self.L["HELP_HEADER"])
+    self:Say("|cffffffff/rnd|r - Open the options panel")
+    self:Say(self.L["HELP_TEST"])
+    self:Say(self.L["HELP_ENABLE"])
+    self:Say(self.L["HELP_DISABLE"])
+    self:Say(self.L["HELP_STATUS"])
+    self:Say("|cffffffff/rnd welcome on|r - " .. (self.L["HELP_WELCOME_ON"] or "Enable welcome message"))
+    self:Say("|cffffffff/rnd welcome off|r - " .. (self.L["HELP_WELCOME_OFF"] or "Disable welcome message"))
+    self:Say("|cffffffff/rnd icon on|r - " .. (self.L["HELP_ICON_ON"] or "Show minimap icon"))
+    self:Say("|cffffffff/rnd icon off|r - " .. (self.L["HELP_ICON_OFF"] or "Hide minimap icon"))
 end
 
 -- Show current status
 function RND:ShowStatus()
-    -- Ensure localization exists
     if not self.L then
-        print(ICON_PATH .. " |cffff0000RND Error:|r Localization not loaded")
+        self:Say("|cffff0000Error:|r Localization not loaded")
         return
     end
 
-    local iconPrefix = ICON_PATH
-    print(iconPrefix .. " " .. self.L["STATUS_HEADER"])
-    print(iconPrefix .. " " .. self.L["STATUS_STATUS"] .. " " ..
-        (self:GetSetting("enabled") and self.L["ENABLED_STATUS"] or self.L["DISABLED_STATUS"]))
-    print(iconPrefix .. " " .. (self.L["STATUS_WELCOME"] or "Welcome message:") .. " " ..
-        (self:GetSetting("showWelcome") and self.L["ENABLED_STATUS"] or self.L["DISABLED_STATUS"]))
-    print(iconPrefix .. " " .. (self.L["STATUS_MINIMAP"] or "Minimap icon:") .. " " ..
-        (self:GetSetting("minimapIconEnabled") and self.L["ENABLED_STATUS"] or self.L["DISABLED_STATUS"]))
-    print(iconPrefix .. " " .. string.format(self.L["STATUS_VERSION"], ADDON_VERSION))
+    local on, off = self.L["ENABLED_STATUS"], self.L["DISABLED_STATUS"]
+    self:Say(self.L["STATUS_HEADER"])
+    self:Say(self.L["STATUS_STATUS"] .. " " .. (self:IsEnabled() and on or off))
+    self:Say((self.L["STATUS_WELCOME"] or "Welcome message:") .. " " .. (self.db.showWelcome ~= false and on or off))
+    self:Say((self.L["STATUS_MINIMAP"] or "Minimap icon:") .. " " .. (self.db.minimapIconEnabled ~= false and on or off))
+    self:Say(string.format(self.L["STATUS_VERSION"], self.version))
 end
-
--- Track initialization state
-RND.initialized = false
 
 -- Hook tooltip to prevent showing debuff tooltips from nameplates
 local function HookTooltips()
     -- Hook main GameTooltip using OnShow to check the unit
     if GameTooltip then
         GameTooltip:HookScript("OnShow", function(self)
-            if RND:GetSetting("enabled") then
+            if RND:IsEnabled() then
                 -- Check if tooltip has a unit
                 local _, unit = self:GetUnit()
                 if unit and string.match(unit, "nameplate") then
@@ -535,7 +393,7 @@ local function HookTooltips()
     -- Hook NamePlateTooltip if it exists
     if NamePlateTooltip then
         NamePlateTooltip:HookScript("OnShow", function(self)
-            if RND:GetSetting("enabled") then
+            if RND:IsEnabled() then
                 self:Hide()
             end
         end)
@@ -544,7 +402,7 @@ local function HookTooltips()
     -- Hook BuffTooltip if it exists (some addons use this)
     if BuffTooltip then
         BuffTooltip:HookScript("OnShow", function(self)
-            if RND:GetSetting("enabled") then
+            if RND:IsEnabled() then
                 local owner = self:GetOwner()
                 if owner and owner:GetParent() then
                     local parent = owner:GetParent()
@@ -557,60 +415,96 @@ local function HookTooltips()
     end
 end
 
--- Register slash command via RGX-Framework
-RGX:RegisterSlashCommand("/rnd", function(args)
-    local success, errorMsg = pcall(RND.HandleSlashCommand, RND, args)
-    if not success then
-        print(ICON_PATH .. " |cffff0000RND Error:|r " .. tostring(errorMsg))
-    end
-end, "RND")
+-- =====================================================================================
+-- The addon
+-- =====================================================================================
 
--- Event registration via RGX-Framework
-RGX:RegisterEvent("NAME_PLATE_UNIT_ADDED", function(event, unitId)
-    if RND.initialized and RND:GetSetting("enabled") then
-        RND:HideNameplateDebuffs(unitId)
-    end
-end, "RND_NameplateAdded")
+RGXAddon(ADDON_NAME, {
+    table = RND,
+    dbName = "RNDSettings",
+    legacyFlat = true, -- players' existing flat settings become the Default profile
+    db = {
+        enabled = true,
+        showWelcome = true,
+        firstRun = true,
+        minimapIconEnabled = true,
+        minimapAngle = 220,
+    },
 
-RGX:RegisterEvent("ADDON_LOADED", function(event, addonName)
-    if addonName == ADDON_NAME then
-        RND:InitializeSettings()
-        RND:CreateMinimapButton()
-        RND:ApplyMinimapVisibility()
-        RND.initialized = true
-    end
-end, "RND_AddonLoaded")
+    brand = "ff7d00",
+    theme = { primary = { 1, 125 / 255, 0 }, accent = { 1, 0.82, 0 } },
+    title = "Remove Nameplate Debuffs!",
 
-RGX:RegisterEvent("PLAYER_LOGIN", function()
-    if not RND.initialized then
-        RND:InitializeSettings()
-        RND.initialized = true
-    end
-    if RND.settingsRestoredFromBackup then
-        RND.settingsRestoredFromBackup = nil
-        if RND.L then
-            print(CHAT_PREFIX .. " " .. (RND.L["SETTINGS_RESTORED"] or "SavedVariables were lost; settings restored from the RGX backup"))
-        end
-    end
-    RND:ApplyMinimapVisibility()
-    RND:DisplayWelcomeMessage()
-    HookTooltips()
-end, "RND_PlayerLogin")
+    slash = { "rnd", handler = function(self, msg) self:HandleSlashCommand(msg) end },
 
-RGX:RegisterEvent("PLAYER_LOGOUT", function()
-    SyncSettingsToBackup()
-end, "RND_PlayerLogout")
-
--- Periodic update to continuously enforce debuff removal on dynamically created frames
-RGX:Every(0.5, function()
-    if RND.initialized and RND:GetSetting("enabled") then
-        for _, nameplate in pairs(C_NamePlate.GetNamePlates()) do
-            if nameplate and nameplate.UnitFrame then
-                local unitId = GetNameplateUnit(nameplate)
-                if unitId then
-                    RND:HideNameplateDebuffs(unitId)
-                end
+    minimap = {
+        name = "RND_MinimapButton",
+        icon = MINIMAP_ICON_TEXTURE,
+        defaultAngle = 220,
+        angleKey = "minimapAngle",
+        enabledKey = "minimapIconEnabled",
+        tooltip = {
+            title = "|cffff7d00R|r|cffffffffemove|r |cffff7d00N|r|cffffffffameplate|r |cffff7d00D|r|cffffffffebuffs|r|cffff7d00!|r",
+            getLines = function()
+                return {
+                    { left = "|cffffffffStatus|r", right = RND:IsEnabled() and "|cff00ff00Enabled|r" or "|cffff0000Disabled|r" },
+                    { left = "|cffff7d00Left-Click|r", right = "|cffffffffOpen options|r" },
+                    { left = "|cffff7d00Right-Click|r", right = "|cffffffffToggle debuff removal|r" },
+                    { left = "|cff4ecdc4Left-Drag|r", right = "|cffffffffMove around minimap|r" },
+                    { left = "|cffe74c3cCtrl+Right-Click|r", right = "|cffffffffHide minimap icon|r" },
+                }
+            end,
+        },
+        onRightClick = function() RND:SetEnabled(not RND:IsEnabled()) end,
+        onCtrlRight = function()
+            RND:SetMinimapShown(false)
+            if RND.L then
+                RND:Say(RND.L["MINIMAP_ICON_HIDDEN"] or "Minimap icon |cffff0000hidden|r. Use |cffffffff/rnd icon on|r to show it again.")
             end
-        end
-    end
-end)
+        end,
+        onVisibilityChanged = function() RND:RefreshPanel() end,
+    },
+
+    options = {
+        General = {
+            {
+                page = "Settings",
+                grid = 2,
+                cards = {
+                    {
+                        card = "Behavior",
+                        controls = {
+                            { toggle = "enabled", label = "Remove nameplate debuffs",
+                              onChange = function(self, enabled) self:ApplyEnabled(enabled) end },
+                        },
+                    },
+                    {
+                        card = "Interface",
+                        controls = {
+                            { toggle = "showWelcome", label = "Show welcome message" },
+                            { toggle = "minimapIconEnabled", label = "Show minimap icon",
+                              onChange = function(self, show) self:ApplyMinimap(show) end },
+                        },
+                    },
+                },
+            },
+        },
+    },
+
+    on = {
+        NAME_PLATE_UNIT_ADDED = function(self, unitId)
+            if self:IsEnabled() then self:HideNameplateDebuffs(unitId) end
+        end,
+        login = function(self)
+            self:DisplayWelcomeMessage()
+            HookTooltips()
+        end,
+    },
+
+    -- Continuously enforce removal on frames Blizzard creates later.
+    every = {
+        enforce = { 0.5, function(self)
+            if self:IsEnabled() then self:HideAllNameplateDebuffs() end
+        end },
+    },
+})

@@ -1,3 +1,9 @@
+## v3.3.12 - 2026-11-18
+
+- Settings, the options panel, `/rnd`, the minimap button, the nameplate event and the enforcement timer are now one RGX-Framework declaration. Your existing settings (including disabled, hidden-icon and silent-welcome choices) carry over into the framework's Default profile.
+- The second copy of the settings that was written into RGX-Framework's own saved variables is gone, along with the "restored from the RGX backup" message. RND's own saved variables are the only owner.
+- The options page is two framework cards (Behavior, Interface). Turning removal on or off, or the minimap icon on or off, takes effect immediately from the panel, the minimap button and `/rnd`.
+
 ## v3.3.11 - 2026-11-05
 
 - Releases are now built with our own packager and published to CurseForge, Wago and GitHub (and WoWInterface where a listing exists).
