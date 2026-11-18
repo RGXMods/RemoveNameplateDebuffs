@@ -1,5 +1,5 @@
 ## Interface: 120105
-## Version: v3.3.11
+## Version: v3.3.12
 ## X-WoWI-ID: 26320
 ## RequiredDeps: RGX-Framework
 ## X-RGX-Framework-MinVersion: 2.19.0
